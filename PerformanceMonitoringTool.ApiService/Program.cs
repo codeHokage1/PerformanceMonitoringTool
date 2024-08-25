@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using PerformanceMonitoringTool.ApiService;
 using PerformanceMonitoringTool.ApiService.Data;
+using PerformanceMonitoringTool.ApiService.Mappings;
 using PerformanceMonitoringTool.ApiService.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +28,10 @@ builder.Services.AddControllers();
 // Add the repository.
 builder.Services.AddScoped<IMonitoredApps, MonitoredAppRepository>();
 
+// Add the mapping
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
+
+// Add the hosted service - background monitoring.
 builder.Services.AddHostedService<BackgroundMonitoringService>();
 
 var app = builder.Build();

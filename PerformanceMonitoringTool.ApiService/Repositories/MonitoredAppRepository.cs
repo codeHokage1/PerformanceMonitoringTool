@@ -18,30 +18,21 @@ namespace PerformanceMonitoringTool.ApiService.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<MonitoredApp?> GetMonitoredAppByIdAsync(Guid id)
+        public async Task<MonitoredApp?> GetMonitoredAppByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
-        }
-
-        public async Task<List<MonitoredAppDto>> GetMonitoredAppsAsync()
-        {
-            var monitoredApps = await _dbContext.MonitoredApps.ToListAsync();
-
-            var monitoredAppsDto = new List<MonitoredAppDto>();
-
-            foreach (var monitoredApp in monitoredApps)
+            var foundMonitoredApp = await _dbContext.MonitoredApps.FirstOrDefaultAsync(x => x.Id == id);
+            if(foundMonitoredApp == null)
             {
-                monitoredAppsDto.Add(new MonitoredAppDto
-                {
-                    Id = monitoredApp.Id,
-                    Name = monitoredApp.Name,
-                    AppId = monitoredApp.AppId,
-                    LastChecked = monitoredApp.LastChecked,
-                    IsOnline = monitoredApp.IsOnline
-                });
+                return null;
             }
 
-            return monitoredAppsDto;
+            return foundMonitoredApp;
+        }
+
+        public async Task<List<MonitoredApp>> GetMonitoredAppsAsync()
+        {
+            return await _dbContext.MonitoredApps.ToListAsync();
+
         }
 
         public Task<MonitoredApp?> RemoveMonitoredAppAsync(Guid id)
