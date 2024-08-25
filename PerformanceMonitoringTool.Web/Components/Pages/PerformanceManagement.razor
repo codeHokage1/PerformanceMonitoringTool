@@ -1,0 +1,30 @@
+﻿@page "/perfomance-management"
+@using PerformanceMonitoringTool.Web.Components.Models
+
+
+
+<h3>Performance Management Tool</h3>
+
+<EditForm Model="@_formData" OnValidSubmit="HandleSubmission">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <ValidationSummary></ValidationSummary>
+
+    <label for="appName">Add App Name: </label>
+    <InputText id="appName" @bind-Value="_formData.AppName"></InputText>
+    <br />
+    <label for="appUrl">Add App URL: </label>
+    <InputText id="appUrl" @bind-Value="_formData.AppURL"></InputText>
+    <br />
+    <button type="submit">Click</button>
+</EditForm>
+
+
+
+@code {
+    FormData _formData = new FormData();
+
+    public async Task HandleSubmission()
+    {
+    }
+
+}
