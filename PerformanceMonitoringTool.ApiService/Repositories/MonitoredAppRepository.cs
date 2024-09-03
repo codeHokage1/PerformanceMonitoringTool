@@ -20,6 +20,16 @@ namespace PerformanceMonitoringTool.ApiService.Repositories
             return addMonitoredApp;
         }
 
+        public Task<MonitoredApp?> GetMonitoredAppByAppIdAsync(string appId)
+        {
+            var foundMonitoredApp = _dbContext.MonitoredApps.FirstOrDefaultAsync(x => x.AppId == appId);
+            if(foundMonitoredApp == null)
+            {
+                return null;
+            }
+            return foundMonitoredApp;
+        }
+
         public async Task<MonitoredApp?> GetMonitoredAppByIdAsync(Guid id)
         {
             var foundMonitoredApp = await _dbContext.MonitoredApps.FirstOrDefaultAsync(x => x.Id == id);
