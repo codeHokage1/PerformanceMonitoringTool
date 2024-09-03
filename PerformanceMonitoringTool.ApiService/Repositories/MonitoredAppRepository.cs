@@ -13,9 +13,11 @@ namespace PerformanceMonitoringTool.ApiService.Repositories
         {
             _dbContext = dbContext;
         }
-        public Task<MonitoredApp> AddMonitoredAppAsync(AddMonitoredApp addMonitoredApp)
+        public async Task<MonitoredApp> AddMonitoredAppAsync(MonitoredApp addMonitoredApp)
         {
-            throw new NotImplementedException();
+            await _dbContext.MonitoredApps.AddAsync(addMonitoredApp);
+            await _dbContext.SaveChangesAsync();
+            return addMonitoredApp;
         }
 
         public async Task<MonitoredApp?> GetMonitoredAppByIdAsync(Guid id)
@@ -35,14 +37,35 @@ namespace PerformanceMonitoringTool.ApiService.Repositories
 
         }
 
-        public Task<MonitoredApp?> RemoveMonitoredAppAsync(Guid id)
+        public async Task<MonitoredApp?> RemoveMonitoredAppAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var foundApp = await _dbContext.MonitoredApps.FindAsync(id);
+            if(foundApp == null)
+            {
+                return null;
+            }
+
+            _dbContext.MonitoredApps.Remove(foundApp);
+            await _dbContext.SaveChangesAsync();
+
+            return foundApp;
         }
 
-        public Task<MonitoredApp?> UpdateMonitoredAppAsync(Guid id, UpdateMonitoredApp updateMonitoredApp)
+        public async Task<MonitoredApp?> UpdateMonitoredAppAsync(Guid id, MonitoredApp updateMonitoredApp)
         {
-            throw new NotImplementedException();
+            var foundApp = await _dbContext.MonitoredApps.FindAsync(id);
+            if(foundApp == null)
+            {
+                return null;
+            }
+
+            foundApp.Name = updateMonitoredApp.Name;
+            foundApp.AppId = updateMonitoredApp.AppId;
+            foundApp.LastChecked = updateMonitoredApp.LastChecked;
+            foundApp.IsOnline = updateMonitoredApp.IsOnline;
+            await _dbContext.SaveChangesAsync();
+
+            return foundApp;
         }
     }
 }

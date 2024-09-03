@@ -1,30 +1,110 @@
-﻿@page "/perfomance-management"
-@using PerformanceMonitoringTool.Web.Components.Models
+﻿@page "/pmt-add"
+
+@inject MonitoredAppService MonitoredAppService
+@using PerformanceMonitoringTool.Web
+@rendermode InteractiveServer // necessary for getting data from forms
+
+@inject ILogger<PerformanceManagement> Logger
 
 
-
-<h3>Performance Management Tool</h3>
-
-<EditForm Model="@_formData" OnValidSubmit="HandleSubmission">
-    <DataAnnotationsValidator></DataAnnotationsValidator>
-    <ValidationSummary></ValidationSummary>
-
-    <label for="appName">Add App Name: </label>
-    <InputText id="appName" @bind-Value="_formData.AppName"></InputText>
-    <br />
-    <label for="appUrl">Add App URL: </label>
-    <InputText id="appUrl" @bind-Value="_formData.AppURL"></InputText>
-    <br />
-    <button type="submit">Click</button>
+<EditForm Model="@NewApp" OnSubmit="HandleValidSubmit" FormName="addApp">
+    <div style="margin-bottom: 10px;">
+        <div>
+            <label for="appId">App ID:</label>
+        </div>
+        <InputText id="appId" @bind-Value="NewApp.AppId" />
+    </div>
+    <div style="margin-bottom: 10px;">
+        <div>
+            <label for="appName">App Name:</label>
+        </div>
+        <InputText id="appName" @bind-Value="NewApp.Name" />
+    </div>
+    <button class="btn btn-primary" type="submit">Add Monitored App</button>
 </EditForm>
 
+@if (!string.IsNullOrEmpty(message))
+{
+    <div class="@(isSuccess ? "success" : "error")">
+        @message
+    </div>
+}
 
+
+<div style="margin: 10px 0; border-top: solid; padding-top: 10px;">
+    <h3>Monitored Apps</h3>
+    @if (monitoredApps == null)
+    {
+        <p>No App yet. Use the form to add.</p>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">App ID</th>
+                        <th scope="col">App Name</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Last Checked</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var app in monitoredApps)
+                    {
+                        <tr>
+                            <td>@app.AppId</td>
+                            <td>@app.Name</td>
+                            <td>@(app.IsOnline ? "Online" : "Offline")</td>
+                            <td>@app.LastChecked.ToString("g")</td> <!-- Formatting datetime -->
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
 
 @code {
-    FormData _formData = new FormData();
+    public AddMonitoredApp NewApp { get; set; } = new AddMonitoredApp();
 
-    public async Task HandleSubmission()
+    private List<MonitoredAppDto> monitoredApps;
+    private string message = string.Empty;
+    private bool isSuccess = false;
+
+    protected override async Task OnInitializedAsync()
     {
+        await RefreshMonitoredApps();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            var response = await MonitoredAppService.AddMonitoredApp(NewApp);
+            if (response.IsSuccessStatusCode)
+            {
+                NewApp = new AddMonitoredApp(); // Clear form
+                message = "App added successfully!";
+                isSuccess = true;
+                await RefreshMonitoredApps();
+            }
+            else
+            {
+                message = $"Error: {response.StatusCode} - {await response.Content.ReadAsStringAsync()}";
+                isSuccess = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            message = $"An error occurred: {ex.Message}";
+            isSuccess = false;
+        }
+    }
+
+    private async Task RefreshMonitoredApps()
+    {
+        monitoredApps = await MonitoredAppService.GetAllMonitoredApps();
     }
 
 }

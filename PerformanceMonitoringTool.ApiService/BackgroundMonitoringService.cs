@@ -16,18 +16,18 @@
             stoppingToken.Register(() =>
                 _logger.LogInformation("Background monitoring service is stopping."));
 
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                try
-                {
-                    _logger.LogInformation("Background monitoring service at {time}", DateTimeOffset.Now);
-                    await Task.Delay(5000, stoppingToken);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "An error occurred in the background monitoring service.");
-                }
-            }
+            //while (!stoppingToken.IsCancellationRequested)
+            //{
+            //    try
+            //    {
+            //        _logger.LogInformation("Background monitoring service at {time}", DateTimeOffset.Now);
+            //        await Task.Delay(5000, stoppingToken);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        _logger.LogError(ex, "An error occurred in the background monitoring service.");
+            //    }
+            //}
 
             _logger.LogInformation("Background monitoring service has stopped.");
         }

@@ -34,6 +34,9 @@ builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 // Add the hosted service - background monitoring.
 builder.Services.AddHostedService<BackgroundMonitoringService>();
 
+// Add the hosted service - consumer.
+builder.Services.AddHostedService<ConsumerService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

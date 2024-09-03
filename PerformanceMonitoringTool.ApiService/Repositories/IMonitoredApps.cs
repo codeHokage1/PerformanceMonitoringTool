@@ -7,8 +7,8 @@ namespace PerformanceMonitoringTool.ApiService.Repositories
     {
         Task<List<MonitoredApp>> GetMonitoredAppsAsync();
         Task<MonitoredApp?> GetMonitoredAppByIdAsync(Guid id);
-        Task<MonitoredApp> AddMonitoredAppAsync(AddMonitoredApp addMonitoredApp);
-        Task<MonitoredApp?> UpdateMonitoredAppAsync(Guid id, UpdateMonitoredApp updateMonitoredApp);
+        Task<MonitoredApp> AddMonitoredAppAsync(MonitoredApp addMonitoredApp);
+        Task<MonitoredApp?> UpdateMonitoredAppAsync(Guid id, MonitoredApp updateMonitoredApp);
         Task<MonitoredApp?> RemoveMonitoredAppAsync(Guid id);
     }
 }
