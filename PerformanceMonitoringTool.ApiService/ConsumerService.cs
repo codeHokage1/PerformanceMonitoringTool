@@ -1,4 +1,5 @@
 ﻿using Confluent.Kafka;
+using System.Text.Json;
 
 namespace PerformanceMonitoringTool.ApiService
 {
@@ -31,7 +32,8 @@ namespace PerformanceMonitoringTool.ApiService
                 try
                 {
                     var consumeResult = _consumer.Consume(stoppingToken);
-                    await ProcessMessageAsync(consumeResult.Message.Value);
+                    var heartbeat = JsonSerializer.Deserialize<HeartbeatMessage>(consumeResult.Message.Value);
+                    await ProcessMessageAsync(heartbeat);
                 }
                 catch (OperationCanceledException)
                 {
@@ -46,9 +48,10 @@ namespace PerformanceMonitoringTool.ApiService
             _consumer.Close();
         }
 
-        private async Task ProcessMessageAsync(string message)
+        private async Task ProcessMessageAsync(HeartbeatMessage message)
         {
-            _logger.LogInformation($"KAFKA - Received message: {message}");
+            // _logger.LogInformation($"KAFKA - Received message: {message}");
+            _logger.LogInformation($" KAFKA - Received heartbeat from {message.ApplicationName} at {message.Timestamp}");
             // Add your message processing logic here
         }
 
@@ -57,5 +60,11 @@ namespace PerformanceMonitoringTool.ApiService
             _consumer.Dispose();
             base.Dispose();
         }
+    }
+
+    public class HeartbeatMessage
+    {
+        public string ApplicationName { get; set; }
+        public DateTime Timestamp { get; set; }
     }
 }
